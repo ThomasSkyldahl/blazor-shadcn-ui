@@ -11,7 +11,9 @@
                               OnGlobalSearchChanged="HandleGlobalSearchChanged"
                               Columns="@_columns"
                               OnColumnVisibilityChanged="HandleColumnVisibilityChanged"
-                              ShowColumnsVisibility="@ColumnsVisibility">
+                              ShowColumnsVisibility="@ColumnsVisibility"
+                              ToolbarFilters="@ToolbarFilters"
+                              ToolbarClass="@ToolbarClass">
                 @ToolbarActions
             </DataTableToolbar>
         }

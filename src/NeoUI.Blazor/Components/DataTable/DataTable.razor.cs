@@ -540,6 +540,13 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     public RenderFragment? ToolbarActions { get; set; }
 
     /// <summary>
+    /// Gets or sets optional filter controls rendered in the toolbar's left section, beside the search input.
+    /// Typically one or more compact <c>Select</c> components acting as filter chips.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ToolbarFilters { get; set; }
+
+    /// <summary>
     /// Gets or sets a custom template for the empty state.
     /// If null, displays default "No results found" message.
     /// </summary>
@@ -560,7 +567,14 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     public string? Class { get; set; }
 
     /// <summary>
-    /// When true, the table's total width is kept in sync with the sum of all column widths during
+    /// Gets or sets additional CSS classes for the toolbar row (the div containing search, filters, and actions).
+    /// Use e.g. <c>pt-0</c> to remove the default top padding.
+    /// </summary>
+    [Parameter]
+    public string? ToolbarClass { get; set; }
+
+    /// <summary>
+    /// When true, the table's total width is kept in syncwith the sum of all column widths during
     /// and after resize. Useful when the table should shrink below its container width rather than
     /// leaving empty space. Requires <see cref="TableContainerClass"/> <c>border-0</c> (or similar)
     /// for the best visual result. Default is <c>false</c>.

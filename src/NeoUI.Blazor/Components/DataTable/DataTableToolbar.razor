@@ -1,12 +1,17 @@
 @namespace NeoUI.Blazor
 @typeparam TData where TData : class
 @inject ILocalizer Localizer
-<div class="flex items-center justify-between gap-2 pt-4">
+<div class="@ClassNames.cn("flex items-center justify-between gap-2 pt-4", ToolbarClass)">
     <div class="flex flex-1 items-center gap-2">
         <Input @bind-Value="@_searchValue"
                @bind-Value:after="@HandleSearchChanged"
                Placeholder="@Localizer["DataTable.Search"]"
                Class="h-8 w-[180px]" />
+
+        @if (ToolbarFilters != null)
+        {
+            @ToolbarFilters
+        }
 
         @if (Columns.Any(c => c.Filterable))
         {
@@ -69,7 +74,13 @@
     public bool ShowColumnsVisibility { get; set; } = true;
 
     [Parameter]
+    public RenderFragment? ToolbarFilters { get; set; }
+
+    [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? ToolbarClass { get; set; }
 
     protected override void OnParametersSet()
     {
