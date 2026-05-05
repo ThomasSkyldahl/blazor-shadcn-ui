@@ -146,6 +146,7 @@ public partial class FilterValue : ComponentBase
     {
         if (v is DateOnly d) return d;
         if (v is DateTime dt) return DateOnly.FromDateTime(dt);
+        if (v is DateTimeOffset dto) return DateOnly.FromDateTime(dto.LocalDateTime);
         if (v is string s && DateOnly.TryParse(s, out var p)) return p;
         return null;
     }

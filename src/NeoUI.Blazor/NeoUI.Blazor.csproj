@@ -49,8 +49,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsePackageReferences)' == 'true'">
-    <PackageReference Include="NeoUI.Icons.Lucide" Version="3.0.0" />
-    <PackageReference Include="NeoUI.Blazor.Primitives" Version="3.8.3" />
+    <PackageReference Include="NeoUI.Icons.Lucide" Version="2.0.1-beta.0.100" />
+    <PackageReference Include="NeoUI.Blazor.Primitives" Version="4.0.2" />
   </ItemGroup>
 
   <ItemGroup>

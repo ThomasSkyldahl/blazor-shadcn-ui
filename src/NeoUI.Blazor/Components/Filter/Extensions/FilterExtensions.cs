@@ -104,6 +104,15 @@ public static class FilterExtensions
     private static Expression? BuildComparisonExpression(FilterCondition condition, MemberExpression member, Type propType, Type underlyingType)
     {
         if (condition.Value == null) return null;
+
+        // DateTimeOffset is not IConvertible — Convert.ChangeType cannot handle it.
+        // Use a dedicated converter and expression builder instead.
+        if (underlyingType == typeof(DateTimeOffset))
+        {
+            if (!TryConvertToDateTimeOffset(condition.Value, out var dto)) return null;
+            return BuildDateTimeOffsetComparisonExpression(condition, dto, member, propType);
+        }
+
         try
         {
             var converted = Convert.ChangeType(condition.Value, underlyingType);
@@ -208,7 +217,83 @@ public static class FilterExtensions
     }
 
     /// <summary>
-    /// Creates an Expression constant of <paramref name="propType"/>.
+    /// Builds comparison expressions for <see cref="DateTimeOffset"/> properties.
+    /// Equals/NotEquals match the whole UTC day. All other operators compare exactly.
+    /// </summary>
+    private static Expression? BuildDateTimeOffsetComparisonExpression(
+        FilterCondition condition, DateTimeOffset dto, MemberExpression member, Type propType)
+    {
+        var constant = BuildConstant(dto, typeof(DateTimeOffset), propType);
+        return condition.Operator switch
+        {
+            FilterOperator.Equals or FilterOperator.NotEquals =>
+                BuildDateTimeOffsetDayComparison(condition.Operator, member, dto, propType),
+            FilterOperator.GreaterThan           => Expression.GreaterThan(member, constant),
+            FilterOperator.LessThan              => Expression.LessThan(member, constant),
+            FilterOperator.GreaterThanOrEqual    => Expression.GreaterThanOrEqual(member, constant),
+            FilterOperator.LessThanOrEqual       => Expression.LessThanOrEqual(member, constant),
+            FilterOperator.Between when condition.SecondaryValue != null
+                && TryConvertToDateTimeOffset(condition.SecondaryValue, out var dto2) =>
+                Expression.AndAlso(
+                    Expression.GreaterThanOrEqual(member, constant),
+                    Expression.LessThanOrEqual(member, BuildConstant(dto2, typeof(DateTimeOffset), propType))),
+            FilterOperator.NotBetween when condition.SecondaryValue != null
+                && TryConvertToDateTimeOffset(condition.SecondaryValue, out var dto3) =>
+                Expression.OrElse(
+                    Expression.LessThan(member, constant),
+                    Expression.GreaterThan(member, BuildConstant(dto3, typeof(DateTimeOffset), propType))),
+            _ => null
+        };
+    }
+
+    /// <summary>
+    /// Matches the whole UTC calendar day for Equals/NotEquals on a DateTimeOffset property,
+    /// consistent with the day-range logic used for DateTime.
+    /// </summary>
+    private static Expression BuildDateTimeOffsetDayComparison(
+        FilterOperator op, MemberExpression member, DateTimeOffset dto, Type propType)
+    {
+        var startOfDay = new DateTimeOffset(dto.UtcDateTime.Date, TimeSpan.Zero);
+        var nextDay    = startOfDay.AddDays(1);
+        var startConst = BuildConstant(startOfDay, typeof(DateTimeOffset), propType);
+        var nextConst  = BuildConstant(nextDay,    typeof(DateTimeOffset), propType);
+        return op switch
+        {
+            FilterOperator.Equals    => Expression.AndAlso(Expression.GreaterThanOrEqual(member, startConst), Expression.LessThan(member, nextConst)),
+            FilterOperator.NotEquals => Expression.OrElse(Expression.LessThan(member, startConst), Expression.GreaterThanOrEqual(member, nextConst)),
+            _                        => Expression.Equal(member, BuildConstant(dto, typeof(DateTimeOffset), propType))
+        };
+    }
+
+    /// <summary>
+    /// Converts a condition value of any compatible type (DateTimeOffset, DateTime, DateOnly, or
+    /// parseable string) to a <see cref="DateTimeOffset"/>.
+    /// </summary>
+    private static bool TryConvertToDateTimeOffset(object value, out DateTimeOffset result)
+    {
+        switch (value)
+        {
+            case DateTimeOffset dto:
+                result = dto;
+                return true;
+            case DateTime dt:
+                result = dt.Kind == DateTimeKind.Unspecified
+                    ? new DateTimeOffset(DateTime.SpecifyKind(dt, DateTimeKind.Utc))
+                    : new DateTimeOffset(dt);
+                return true;
+            case DateOnly d:
+                result = new DateTimeOffset(d.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);
+                return true;
+            case string s when DateTimeOffset.TryParse(
+                s, null, System.Globalization.DateTimeStyles.RoundtripKind, out var parsed):
+                result = parsed;
+                return true;
+            default:
+                result = default;
+                return false;
+        }
+    }
+
     /// For nullable properties (e.g. <c>decimal?</c>), wraps the underlying-type constant
     /// in <see cref="Expression.Convert"/> so it is assignable to the nullable type.
     /// </summary>
