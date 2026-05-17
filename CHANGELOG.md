@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-5-17 — DateInput & TimeInput
+## 2026-5-17 — DateInput, TimeInput & FilterBuilder Nested Groups
 
 > **Targeting: `v4.1.0`**  
 > **Affects `NeoUI.Blazor`.** Additive — no breaking changes.
@@ -90,6 +90,47 @@ Keyboard-driven segmented time field that renders hour, minute, optional second,
 | `C` | Sets all segments to the current time. Does not fire when combined with Ctrl/Meta (copy shortcut). If `MinuteStep > 1`, the seeded minute is rounded down to the nearest step. |
 | `Backspace` / `Delete` | Clears the active segment value. |
 | `Tab` / `Shift+Tab` | Navigates between segments using native browser focus. |
+
+---
+
+### ✨ New Feature — `FilterBuilder`: Nested Group Support with Interactive Predicate-Tree Editor
+
+Added `AllowGroups` parameter (`bool`, default `false`) to `FilterBuilder<TData>`, enabling an interactive predicate-tree editor with AND/OR logic toggles and nested sub-groups.
+
+#### New: `FilterGroupPanel` component
+
+A new recursive sub-component `FilterGroupPanel` renders one `FilterGroup` node. Each panel provides:
+
+- Logic toggle buttons (Match **ALL of** / **ANY of**) that update `FilterGroup.Logic`
+- **[+ Add predicate ▾]** dropdown — same field-picker pattern as the root filter button
+- **[+ Add group]** button — inserts a nested `FilterGroup` (hidden at max nesting depth, default 3)
+- Condition chips rendered via `FilterChip`, fully removable
+- Recursive nested group panels with remove (×) buttons on non-root groups
+- Visual treatment: root group blends with wrapper; nested groups use `border-dashed` with indent
+
+#### `FilterBuilder` changes
+
+- Replaced internal `_conditions` state with `_rootGroup` (`FilterGroup`) — deep-cloned on init and external sync
+- `NotifyFiltersChanged` now emits a full deep clone of `_rootGroup` (fixes prior bug where nested-group mutations were silently discarded)
+- `ClearAll` now clears both root conditions and nested groups
+- `ApplyPreset` now clones logic + conditions + nested groups from the preset
+- `ShowButtonText` now correctly checks both `Conditions` and `NestedGroups` so the "Filter" label hides when only group-level conditions are active
+
+#### New `AllowGroups` parameter
+
+```razor
+@* Enable predicate-tree editor — opt-in, backward-compatible *@
+<FilterBuilder TData="Order"
+               @bind-Filters="activeFilters"
+               AllowGroups="true"
+               OnFilterChange="HandleFilterChange">
+    ...
+</FilterBuilder>
+```
+
+When `AllowGroups = false` (default), the component renders the legacy flat chip layout with no logic toggle and no add-group button — fully backward-compatible.
+
+The demo site includes a dedicated **Nested Groups** demo page under the FilterBuilder section showcasing AND/OR logic toggles, nested sub-groups, and preset integration.
 
 ---
 
