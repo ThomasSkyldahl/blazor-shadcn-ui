@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-5-18 — NumericInput ClampToRange Fix & FilterChip Vertical Alignment
+
+> **Targeting: `v4.1.4`**  
+> **Affects `NeoUI.Blazor`.** Bug fixes — no breaking changes.
+
+---
+
+### 🐛 Fix — `NumericInput<TValue>`: Integer values reset to 0 when no Min/Max set
+
+Fixed a bug where `NumericInput` fields bound to non-nullable value types (e.g. `int`, `long`, `short`) would reset to `0` after typing a value and blurring, whenever no `Min` or `Max` constraints were set.
+
+**Root cause:** `ClampToRange` used `TryParseValue(Min)` / `TryParseValue(Max)` and then checked the parsed result for `null` to decide whether clamping was needed. For non-nullable generics (`TValue=int`), `default(TValue?)` resolves to `0` — not `null` — so every unconstrained field treated `Max=0`, silently clamping all positive input to `0`.
+
+**Fix:** `ClampToRange` now uses `string.IsNullOrWhiteSpace(Min)` / `string.IsNullOrWhiteSpace(Max)` (`hasMin` / `hasMax`) as the guards for all type-specific branches, completely bypassing the unreliable parsed-value null checks. This also correctly handles one-sided constraints (e.g. `Min` set but no `Max`).
+
+---
+
+### 🐛 Fix — `FilterChip`: Select/Combobox compact triggers misaligned vertically
+
+Added `py-0` to the compact CSS for `Select` and `Combobox` triggers inside `FilterValue`. Browser default padding was causing the trigger text to sit off-center within the chip row.
+
+---
+
 ## 2026-5-18 — FilterBuilder Currency Parameter
 
 > **Targeting: `v4.1.3`**  

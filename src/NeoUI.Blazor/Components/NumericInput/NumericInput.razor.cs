@@ -507,63 +507,69 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
         if (value == null)
             return value;
 
+        // Use string-level guards — relying on null checks on parsed TValue? is unreliable for
+        // non-nullable value types (e.g. TValue=int) because default(TValue?) resolves to 0,
+        // not null, so minValue/maxValue are never null and every unconstrained field gets
+        // silently clamped to 0.
+        var hasMin = !string.IsNullOrWhiteSpace(Min);
+        var hasMax = !string.IsNullOrWhiteSpace(Max);
+
+        if (!hasMin && !hasMax)
+            return value; // No clamping needed
+
         var targetType = typeof(TValue);
         var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
 
-        // Parse Min and Max values
         var minValue = TryParseValue(Min);
         var maxValue = TryParseValue(Max);
-
-        if (minValue == null && maxValue == null)
-            return value; // No clamping needed
 
         // Clamp based on type
         if (underlyingType == typeof(int))
         {
             var intValue = (int)(object)value;
-            if (minValue != null && intValue < (int)(object)minValue)
+            if (hasMin && intValue < (int)(object)minValue!)
                 return minValue;
-            if (maxValue != null && intValue > (int)(object)maxValue)
+            if (hasMax && intValue > (int)(object)maxValue!)
                 return maxValue;
         }
         else if (underlyingType == typeof(decimal))
         {
             var decValue = (decimal)(object)value;
-            if (minValue != null && decValue < (decimal)(object)minValue)
+            if (hasMin && decValue < (decimal)(object)minValue!)
                 return minValue;
-            if (maxValue != null && decValue > (decimal)(object)maxValue)
+            if (hasMax && decValue > (decimal)(object)maxValue!)
                 return maxValue;
         }
         else if (underlyingType == typeof(double))
         {
             var dblValue = (double)(object)value;
-            if (minValue != null && dblValue < (double)(object)minValue)
+            if (hasMin && dblValue < (double)(object)minValue!)
                 return minValue;
-            if (maxValue != null && dblValue > (double)(object)maxValue)
+            if (hasMax && dblValue > (double)(object)maxValue!)
                 return maxValue;
         }
         else if (underlyingType == typeof(float))
         {
             var fltValue = (float)(object)value;
-            if (minValue != null && fltValue < (float)(object)minValue)
+            if (hasMin && fltValue < (float)(object)minValue!)
                 return minValue;
-            if (maxValue != null && fltValue > (float)(object)maxValue)
+            if (hasMax && fltValue > (float)(object)maxValue!)
                 return maxValue;
         }
         else if (underlyingType == typeof(long))
         {
             var longValue = (long)(object)value;
-            if (minValue != null && longValue < (long)(object)minValue)
+            if (hasMin && longValue < (long)(object)minValue!)
                 return minValue;
-            if (maxValue != null && longValue > (long)(object)maxValue)
+            if (hasMax && longValue > (long)(object)maxValue!)
                 return maxValue;
         }
         else if (underlyingType == typeof(short))
         {
             var shortValue = (short)(object)value;
-            if (minValue != null && shortValue < (short)(object)minValue)
+            if (hasMin && shortValue < (short)(object)minValue!)
                 return minValue;
-            if (maxValue != null && shortValue > (short)(object)maxValue)
+            if (hasMax && shortValue > (short)(object)maxValue!)
                 return maxValue;
         }
 
