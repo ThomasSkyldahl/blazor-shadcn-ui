@@ -38,7 +38,8 @@
     <div class="flex-1 min-w-[140px]">
         <FilterValue Condition="@Condition"
                      FieldDefinition="@GetFieldDefinition()"
-                     ConditionChanged="@HandleConditionChanged" />
+                     ConditionChanged="@HandleConditionChanged"
+                     Currency="@Currency" />
     </div>
 
     @* Remove Button *@
@@ -60,6 +61,7 @@
     [Parameter] public EventCallback<FilterCondition> ConditionChanged { get; set; }
     [Parameter] public EventCallback OnRemove { get; set; }
     [Parameter] public string? Class { get; set; }
+    [Parameter] public string Currency { get; set; } = "USD";
 
     private string CssClass => ClassNames.cn(
         "flex items-center gap-2 flex-wrap sm:flex-nowrap",

@@ -202,9 +202,10 @@
                               IsRoot="true"
                               FieldPickerVariant="@FieldPickerVariant"
                               ComboboxSearchInterval="@ComboboxSearchInterval"
-                              OnChanged="@HandleGroupChanged"
-                              OnClearAll="@(!_presets.Any() ? EventCallback.Factory.Create(this, ClearAll) : default)"
-                              HasActiveFilters="@(_rootGroup.Conditions.Any() || _rootGroup.NestedGroups.Any())" />
+                                      Currency="@Currency"
+                                      OnChanged="@HandleGroupChanged"
+                                      OnClearAll="@(!_presets.Any() ? EventCallback.Factory.Create(this, ClearAll) : default)"
+                                      HasActiveFilters="@(_rootGroup.Conditions.Any() || _rootGroup.NestedGroups.Any())" />
         </div>
     }
     else
@@ -218,6 +219,7 @@
                 <FilterChip Condition="@cond"
                             FieldDefinition="@fieldDef"
                             Size="@ChipSize"
+                            Currency="@Currency"
                             ConditionChanged="@HandleConditionChanged"
                             OnRemove="@(() => RemoveCondition(cond))" />
             </div>

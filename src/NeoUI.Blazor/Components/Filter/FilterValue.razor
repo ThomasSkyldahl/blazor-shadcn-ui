@@ -68,11 +68,13 @@ else if (!IsValueNotNeeded())
             <div class="flex items-center gap-1">
                 <CurrencyInput TValue="decimal?"
                                @bind-Value="@CurrencyDecimalValue"
+                               Currency="@Currency"
                                Placeholder="@(FieldDefinition?.Placeholder ?? "Min")"
                                Class="@InputCompactSecondary" />
                 <span class="text-xs text-muted-foreground px-1">and</span>
                 <CurrencyInput TValue="decimal?"
                                @bind-Value="@SecondaryCurrencyDecimalValue"
+                               Currency="@Currency"
                                Placeholder="Max"
                                Class="@InputCompactSecondary" />
             </div>
@@ -81,6 +83,7 @@ else if (!IsValueNotNeeded())
         {
             <CurrencyInput TValue="decimal?"
                            @bind-Value="@CurrencyDecimalValue"
+                           Currency="@Currency"
                            Placeholder="@(FieldDefinition?.Placeholder ?? "Value")"
                            Class="@InputCompact" />
         }

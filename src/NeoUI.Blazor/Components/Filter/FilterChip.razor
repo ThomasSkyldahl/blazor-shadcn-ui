@@ -41,6 +41,7 @@
             <FilterValue Condition="@Condition"
                          FieldDefinition="@FieldDefinition"
                          ConditionChanged="@HandleConditionChanged"
+                         Currency="@Currency"
                          Compact="true" />
         </span>
     }
@@ -61,6 +62,7 @@
     [Parameter] public EventCallback<FilterCondition> ConditionChanged { get; set; }
     [Parameter] public FilterChipSize Size { get; set; } = FilterChipSize.Small;
     [Parameter] public string? Class { get; set; }
+    [Parameter] public string Currency { get; set; } = "USD";
 
     private List<FilterOperator> _availableOperators = new();
 

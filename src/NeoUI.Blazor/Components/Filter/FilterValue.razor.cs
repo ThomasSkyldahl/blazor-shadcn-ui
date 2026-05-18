@@ -11,6 +11,9 @@ public partial class FilterValue : ComponentBase
     [Parameter] public FilterFieldDefinition? FieldDefinition { get; set; }
     [Parameter] public EventCallback<FilterCondition> ConditionChanged { get; set; }
 
+    /// <inheritdoc cref="FilterBuilder{TData}.Currency"/>
+    [Parameter] public string Currency { get; set; } = "USD";
+
     /// <summary>
     /// When true, uses compact styling for use inside a <see cref="FilterChip"/>.
     /// Inputs keep their border but use reduced padding; Select/MultiSelect are borderless.

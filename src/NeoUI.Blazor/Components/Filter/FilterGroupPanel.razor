@@ -51,8 +51,9 @@
             <FilterChip Condition="@cond"
                         FieldDefinition="@fieldDef"
                         Size="@ChipSize"
-                        ConditionChanged="@HandleConditionChanged"
-                        OnRemove="@(() => RemoveCondition(cond))" />
+                            Currency="@Currency"
+                            ConditionChanged="@HandleConditionChanged"
+                            OnRemove="@(() => RemoveCondition(cond))" />
         </div>
     }
 
@@ -66,6 +67,7 @@
                           IsRoot="false"
                           FieldPickerVariant="@FieldPickerVariant"
                           ComboboxSearchInterval="@ComboboxSearchInterval"
+                          Currency="@Currency"
                           MaxNestingDepth="@MaxNestingDepth"
                           CurrentDepth="@(CurrentDepth + 1)"
                           OnChanged="@OnChanged"
@@ -174,6 +176,7 @@
     [Parameter] public bool HasActiveFilters { get; set; }
     [Parameter] public FilterFieldPickerVariant FieldPickerVariant { get; set; }
     [Parameter] public int ComboboxSearchInterval { get; set; } = 200;
+    [Parameter] public string Currency { get; set; } = "USD";
 
     private string? _fieldPickerSelected;
 

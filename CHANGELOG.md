@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-5-18 — FilterBuilder Currency Parameter
+
+> **Targeting: `v4.1.3`**  
+> **Affects `NeoUI.Blazor`.** Additive — no breaking changes.
+
+---
+
+### ✨ Enhancement — `FilterBuilder`: `Currency` parameter
+
+Added `Currency` (`string`, default `"USD"`) parameter. Accepts any ISO 4217 currency code and propagates it automatically through the entire component tree (`FilterGroupPanel` → `FilterConditionRow` → `FilterChip` → `FilterValue`) so all `CurrencyInput` editors inside a `FilterBuilder` render the correct currency symbol without per-field configuration.
+
+```razor
+<FilterBuilder TData="Invoice"
+               @bind-Filters="filters"
+               Currency="EUR"
+               OnFilterChange="HandleFilterChange">
+    <FilterFields>
+        <FilterField Field="Amount" Label="Amount" Icon="euro" Type="FilterFieldType.Number"
+                     EditorType="FilterEditorType.Currency" />
+    </FilterFields>
+</FilterBuilder>
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Currency` | `string` | `"USD"` | ISO 4217 currency code applied to all currency-type field editors. |
+
+---
+
 ## 2026-5-18 — Input UX Fixes & Combobox Search Interval
 
 > **Targeting: `v4.1.2`**  

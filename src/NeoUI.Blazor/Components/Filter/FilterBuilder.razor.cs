@@ -83,6 +83,12 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     /// </summary>
     [Parameter] public int ComboboxSearchInterval { get; set; } = 200;
 
+    /// <summary>
+    /// ISO 4217 currency code passed through to CurrencyInput editors for fields with
+    /// <see cref="FilterEditorType.Currency"/>. Defaults to "USD".
+    /// </summary>
+    [Parameter] public string Currency { get; set; } = "USD";
+
     // ── Computed ─────────────────────────────────────────────────────────────
 
     private string WrapperCssClass => ClassNames.cn(Class);
