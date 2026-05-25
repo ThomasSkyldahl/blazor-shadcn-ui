@@ -249,7 +249,7 @@ public partial class DataView<TItem> : ComponentBase
         get
         {
             var items = SortedItems;
-            if (_paginationState.PageSize <= 0) return items;
+            if (PageSize <= 0) return items;
             return (IReadOnlyList<TItem>)items
                 .Skip(_paginationState.StartIndex)
                 .Take(_paginationState.PageSize)
