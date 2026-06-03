@@ -336,11 +336,14 @@ public partial class DateInput : ComponentBase, IAsyncDisposable
         }
     }
 
-    private async Task FocusFirstSegment()
+    /// <summary>Programmatically focuses the first editable segment of the date input.</summary>
+    public async Task FocusAsync()
     {
         if (_jsModule is null) return;
         await _jsModule.InvokeVoidAsync("focusFirstSegment", _containerRef);
     }
+
+    private Task FocusFirstSegment() => FocusAsync();
 
     // ── Keyboard handler ──────────────────────────────────────────────────
 
