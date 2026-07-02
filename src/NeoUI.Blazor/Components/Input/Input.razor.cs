@@ -659,20 +659,21 @@ public partial class Input : ComponentBase, IAsyncDisposable
         }
     }
 
-public async ValueTask FocusAsync()
-{
-    try
+    public async ValueTask FocusAsync()
     {
-        await _elementReference.FocusAsync();
-    }
-    catch (JSDisconnectedException)
-    {
-        // The JS runtime is already disposed / disconnected.
-    }
-    catch (InvalidOperationException ex)
-    {
-        throw new InvalidOperationException(
-            "Cannot focus the input before it has rendered. Call FocusAsync after the component has rendered at least once (e.g., from OnAfterRenderAsync or in response to user interaction).",
-            ex);
+        try
+        {
+            await _elementReference.FocusAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The JS runtime is already disposed / disconnected.
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException(
+                "Cannot focus the input before it has rendered. Call FocusAsync after the component has rendered at least once (e.g., from OnAfterRenderAsync or in response to user interaction).",
+                ex);
+        }
     }
 }
